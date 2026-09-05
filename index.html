@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="A mobile-first 52-week JLPT N5 study tracker for September 2026 to September 2027.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>JLPT N5 Tracker V5</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#f4f6f8;color:#111827}
+header{background:#111827;color:white;padding:18px 16px;position:sticky;top:0;z-index:5} h1{margin:0;font-size:22px} .sub{opacity:.75;font-size:12px;margin-top:4px}
+nav{display:flex;gap:8px;overflow:auto;padding:10px;background:white;position:sticky;top:69px;z-index:4;border-bottom:1px solid #ddd}
+nav button{border:0;background:#eef0f3;padding:9px 12px;border-radius:12px;white-space:nowrap} nav button.active{background:#111827;color:#fff}
+main{max-width:760px;margin:auto;padding:14px} .card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0000000d}
+h2{font-size:18px;margin:0 0 10px} h3{font-size:15px;margin:12px 0 7px} .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#f7f7f8;border-radius:14px;padding:12px} .big{font-size:25px;font-weight:700} .muted{color:#667085;font-size:13px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #eee} .task:last-child{border:0}
+.task input{width:22px;height:22px;margin-top:1px} .task a,.resource a{color:inherit;text-decoration:none} .launch{margin-left:auto;background:#111827;color:#fff;border-radius:10px;padding:6px 9px;font-size:12px}
+.resource{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #eee} .resource:last-child{border:0}
+.resource .go{margin-left:auto;background:#eef0f3;padding:7px 10px;border-radius:10px;font-size:12px}
+.progress{height:9px;background:#e5e7eb;border-radius:9px;overflow:hidden} .bar{height:100%;background:#111827}
+textarea,input[type=text],input[type=number],input[type=time]{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:10px;font:inherit}
+.week{padding:12px;border:1px solid #e5e7eb;border-radius:14px;margin:8px 0} .week button{width:100%;text-align:left;border:0;background:none;font:inherit}
+.small{font-size:12px} .pill{display:inline-block;background:#eef0f3;padding:4px 8px;border-radius:999px;font-size:11px;margin:2px}
+footer{height:30px}
+</style></head><body>
+<header><h1>JLPT N5 Tracker V5</h1><div class="sub">7 Sep 2026 → 18 Sep 2027 • 9 hours/week</div></header>
+<div id="installBox" style="display:none;padding:10px 14px;background:#fff;border-bottom:1px solid #ddd;text-align:center">
+<button id="installBtn" style="background:#111827;color:#fff;border:0;border-radius:12px;padding:10px 14px">Install JLPT N5 Tracker</button>
+</div>
+<nav id="nav"><button data-tab="today">Today</button><button data-tab="calendar">Calendar</button><button data-tab="resources">Resources</button><button data-tab="progress">Progress</button><button data-tab="notes">Notes</button></nav>
+<main id="app"></main><footer></footer>
+<script>
+const START=new Date('2026-09-07T00:00:00'), EXAM=new Date('2027-09-18T00:00:00');
+const curriculum=["Hiragana + katakana; です; greetings", "Complete kana; これ/それ/あれ; everyday objects", "Numbers 1–100, age, phone numbers; です/ですか", "Time, days, months, dates", "は / の; family; 一 二 三 四 五", "Demonstratives; objects/places; 金 土 年 本 人", "を + basic verbs; 今 大 小 中 上", "に / で; places/transport; 下 左 右 前 後", "ます/ません/ました/ませんでした; 行 来 帰 見 聞", "い/な adjectives; descriptions/weather; 高 安 新 古 長", "あります/います; rooms/furniture/animals; 山 川 田 天 気", "Foundation review + mini-test", "Family and people; descriptions", "すき/きらい/じょうず/へた; が", "できます; hobbies/sports/languages", "ませんか / ましょう", "Shopping; いくら / ください; money/food/clothing", "Counters: つ, 人, 枚, 本, 個, 円, 時", "Places/directions; へ / に / で", "て-form + てください", "ています; current actions", "Past activities; ました / ませんでした", "Requests/invitations review: ください / てください / ましょう", "Phase 2 checkpoint", "Particle review: は が を に で の と へ", "Verb groups and conjugation", "ない-form", "Negative forms: ません / ない / ませんでした / なかった", "たい-form", "Comparisons: より / ほうが / いちばん", "Frequency: いつも / よく / ときどき / あまり / ぜんぜん", "Connectors: そして / でも / だから / それから", "Weather and seasons", "Daily routine", "Listening-focused week", "N5 checkpoint + mistake log", "N5 vocabulary consolidation", "Core N5 kanji in words", "Grammar I: particles + basic sentence structure", "Grammar II: adjectives, conjugations, て-form, ています, たい, comparisons, existence", "Timed short N5 readings", "N5-style listening practice", "Notices, messages, ads, schedules", "Listening: restaurant, shopping, school, transport, plans", "Practice Test #1 + analyze mistakes", "Repair week: focus on weakest areas", "Practice Test #2 + compare scores", "Final major learning week", "Full review + practice test", "Eliminate top 5 recurring mistakes", "Final practice test and light review", "Taper week; light review; exam 18 Sep 2027"];
+const phases=["Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Foundations", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Basic Japanese", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "Build N5 Knowledge", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "JLPT Preparation", "Final Month", "Final Month", "Final Month", "Final Month"];
+const resources=[["Duolingo", "https://www.duolingo.com/", "Japanese practice"], ["Renshuu", "https://www.renshuu.org/", "Main Japanese study app"], ["Tadoku", "https://tadoku.org/japanese/en/", "Graded reading + audio"], ["Comprehensible Japanese", "https://www.youtube.com/c/ComprehensibleJapanese", "Beginner listening"], ["ToKini Andy Kana", "https://www.tokiniandy.com/tokini-japanese-kana", "Kana lessons"], ["Kanshudo", "https://www.kanshudo.com/", "Kanji/writing support"], ["Kana Practice", "https://kanapractice.com/", "Quick kana drills"], ["JTest4You", "https://japanesetest4you.com/", "Later N5 practice"]];
+const key='jlptN5V4';
+let state=JSON.parse(localStorage.getItem(key)||'{"done":{},"notes":"","kana":0,"kanji":0,"reminder":"20:00","tab":"today"}');
+const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function save(){localStorage.setItem(key,JSON.stringify(state));}
+function dateForWeekDay(w,d){let x=new Date(START);x.setDate(x.getDate()+(w-1)*7+d);return x}
+function weekInfo(){let now=new Date(); let diff=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-START)/86400000); let w=Math.floor(diff/7)+1; if(w<1)w=1;if(w>52)w=52;return {w,d:Math.max(0,Math.min(6,diff%7))}}
+function schedule(w,d){
+ if(w===52) return d<5?[['Kana/kanji',10,'kana'],['Renshuu',15,'renshuu'],['Light listening',15,'listen'],['Light review',20,'review']]:d===5?[['Kana/kanji',10,'kana'],['Very light review',30,'review'],['Listening',20,'listen'],['Reading',20,'tadoku'],['Relax / prepare',40,'review']]:[['Exam / recovery',120,'review']];
+ if([12,24,36].includes(w)) return d<5?[['Kana/kanji',10,'kana'],['Renshuu',20,'renshuu'],['Duolingo',15,'duolingo'],['Checkpoint review',15,'review']]:d===5?[['Kana/kanji',20,'kana'],['Renshuu',25,'renshuu'],['Checkpoint test',45,'test'],['Mistake review',20,'review'],['Listening',10,'listen']]:[['Kana/kanji',20,'kana'],['Renshuu',25,'renshuu'],['Duolingo',25,'duolingo'],['Mistake review',30,'review'],['Tadoku / CJ',20,'tadoku']];
+ if([45,47,49,51].includes(w)) return d<5?[['Kana/kanji',10,'kana'],['Renshuu',20,'renshuu'],['Duolingo',15,'duolingo'],['Test-area review',15,'review']]:d===5?[['Kana/kanji',10,'kana'],['Timed practice test',60,'test'],['Test analysis',50,'review']]:[['Kana/kanji',10,'kana'],['Renshuu',25,'renshuu'],['Targeted repair',35,'review'],['Tadoku reading',20,'tadoku'],['Listening',20,'listen']];
+ return d<5?[['Kana / kanji',10,'kana'],['Renshuu',20,'renshuu'],['Duolingo',20,'duolingo'],['Review / recall',10,'review']]:d===5?[['Kana / kanji',20,'kana'],['Renshuu',30,'renshuu'],['Grammar / weekly focus',30,'grammar'],['Vocabulary',20,'vocab'],['Listening',10,'listen'],['Tadoku reading',10,'tadoku']]:[['Kana / kanji',20,'kana'],['Renshuu',30,'renshuu'],['Duolingo',30,'duolingo'],['Tadoku reading',20,'tadoku'],['Weekly review / mistake log',20,'review']];
+}
+const links={duolingo:'https://www.duolingo.com/',renshuu:'https://www.renshuu.org/',tadoku:'https://tadoku.org/japanese/en/',listen:'https://www.youtube.com/c/ComprehensibleJapanese',kana:'https://www.tokiniandy.com/tokini-japanese-kana',grammar:'https://www.renshuu.org/',vocab:'https://www.renshuu.org/',test:'https://japanesetest4you.com/',review:'https://www.renshuu.org/'};
+function taskHTML(t,w,d){let id=w+'-'+d+'-'+t[2]+'-'+t[0];let checked=!!state.done[id];let url=links[t[2]]||links.review;return `<div class="task"><input type="checkbox" ${checked?'checked':''} onchange="toggle('${id}')"><div style="flex:1"><b>${t[0]}</b><div class="muted">${t[1]} min</div></div><a class="launch" href="${url}" target="_blank" rel="noopener">Open</a></div>`}
+function renderToday(){let {w,d}=weekInfo();let dt=dateForWeekDay(w,d);let tasks=schedule(w,d);let done=tasks.filter(t=>state.done[w+'-'+d+'-'+t[2]+'-'+t[0]]).length;app.innerHTML=`<div class="card"><h2>Today</h2><div class="muted">${days[d]} • ${
+dt.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}</div><div class="pill">Week ${w} / 52</div><div class="pill">${phases[w-1]}</div><h3>Focus: ${curriculum[w-1]}</h3><div class="progress"><div class="bar" style="width:${tasks.length?done/tasks.length*100:0}%"></div></div><p class="small">${done} / ${tasks.length} tasks complete</p>${tasks.map(t=>taskHTML(t,w,d)).join('')}</div><div class="card"><h2>Quick stats</h2><div class="grid"><div class="stat"><div class="big">${streak()}</div><div class="muted">day streak</div></div><div class="stat"><div class="big">${state.kana}</div><div class="muted">katakana confidence / 100</div></div><div class="stat"><div class="big">${state.kanji}</div><div class="muted">kanji count</div></div><div class="stat"><div class="big">${Math.max(0,Math.ceil((EXAM-new Date())/86400000))}</div><div class="muted">days to exam</div></div></div></div>`}
+function toggle(id){state.done[id]=!state.done[id];save();render()}
+function renderResources(){app.innerHTML=`<div class="card"><h2>Resources</h2><p class="muted">Tap Open to launch the resource, then return here and tick off your task. These are the official/main resource links.</p>${resources.map(r=>`<div class="resource"><div><b>${r[0]}</b><div class="muted">${r[2]}</div></div><a class="go" href="${r[1]}" target="_blank" rel="noopener">Open</a></div>`).join('')}</div>`}
+function renderCalendar(){let html='<div class="card"><h2>52-week calendar</h2>';for(let w=1;w<=52;w++){html+=`<div class="week"><button onclick="showWeek(${w})"><b>Week ${w}</b> <span class="pill">${phases[w-1]}</span><div class="muted">${dateForWeekDay(w,0).toLocaleDateString()} – ${dateForWeekDay(w,6).toLocaleDateString()}</div><div class="small">${curriculum[w-1]}</div></button></div>`}app.innerHTML=html+'</div>'}
+function showWeek(w){let x='';for(let d=0;d<7;d++){let tasks=schedule(w,d);x+=`<div class="week"><b>${days[d]} — ${dateForWeekDay(w,d).toLocaleDateString()}</b>${tasks.map(t=>`<div class="small" style="padding:4px 0">${t[0]} • ${t[1]} min</div>`).join('')}</div>`}app.innerHTML=`<div class="card"><h2>Week ${w}</h2><div class="muted">${phases[w-1]}</div><h3>${curriculum[w-1]}</h3>${x}<button onclick="renderCalendar()">Back to calendar</button></div>`}
+function renderProgress(){let total=0,done=0;for(let w=1;w<=52;w++)for(let d=0;d<7;d++)for(let t of schedule(w,d)){total++;if(state.done[w+'-'+d+'-'+t[2]+'-'+t[0]])done++}let pct=Math.round(done/total*100);app.innerHTML=`<div class="card"><h2>Progress</h2><div class="big">${pct}%</div><div class="progress"><div class="bar" style="width:${pct}%"></div></div><p>${done} / ${total} planned tasks complete</p><h3>Katakana confidence</h3><input type="number" min="0" max="100" value="${state.kana}" onchange="state.kana=Math.max(0,Math.min(100,+this.value||0));save()"><h3>Kanji learned</h3><input type="number" min="0" value="${state.kanji}" onchange="state.kanji=Math.max(0,+this.value||0);save()"><h3>Exam</h3><p>18 September 2027</p></div>`}
+function renderNotes(){app.innerHTML=`<div class="card"><h2>Notes & mistake log</h2><textarea rows="12" placeholder="Record mistakes, tricky katakana, grammar to revisit..." oninput="state.notes=this.value;save()">${state.notes}</textarea><h3>Reminder preference</h3><input type="time" value="${state.reminder}" onchange="state.reminder=this.value;save()"><p class="muted">Direct-file mode can save your preferred reminder time, but it cannot reliably send background notifications. Hosting V4 over HTTPS would allow a fuller PWA version.</p></div>`}
+function streak(){let s=0;for(let i=0;i<365;i++){let dt=new Date();dt.setDate(dt.getDate()-i);let diff=Math.floor((new Date(dt.getFullYear(),dt.getMonth(),dt.getDate())-START)/86400000);if(diff<0)break;let w=Math.floor(diff/7)+1,d=diff%7;let tasks=schedule(w,d);if(tasks.length&&tasks.every(t=>state.done[w+'-'+d+'-'+t[2]+'-'+t[0]]))s++;else if(i>0)break}return s}
+function render(){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));({today:renderToday,calendar:renderCalendar,resources:renderResources,progress:renderProgress,notes:renderNotes}[state.tab])()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()});
+render();
+
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('installBox').style.display='block';
+});
+document.getElementById('installBtn').onclick=async()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('installBox').style.display='none';
+};
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('installBox').style.display='none';
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+}
+</script></body></html>

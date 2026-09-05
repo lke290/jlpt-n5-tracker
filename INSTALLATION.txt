@@ -1,0 +1,34 @@
+JLPT N5 Tracker V5 — Installable PWA
+
+WHAT THIS VERSION ADDS
+- Web App Manifest
+- 192px and 512px app icons
+- Standalone app display
+- Service worker
+- Offline app-shell caching
+- Automatic cache versioning/update cleanup
+- In-app Install button when the browser provides the install prompt
+- Home-screen shortcuts for Today and Resources
+- All V4 study content and resource links retained
+
+IMPORTANT
+A PWA must be served over HTTPS (or localhost/127.0.0.1 for development) to be installable.
+Opening index.html directly from a file manager will NOT provide full PWA installation.
+
+QUICK HOSTING OPTION: GITHUB PAGES
+1. Create a GitHub repository, e.g. "jlpt-n5-tracker".
+2. Upload everything in this folder, preserving the icons/ folder.
+3. Enable GitHub Pages for the repository's main branch.
+4. Open the HTTPS Pages URL on your phone.
+5. Android/Chrome: use the browser's Install/Add to Home Screen option, or the app's Install button.
+6. iPhone/iPad: open the HTTPS site in a supported browser and use the Share menu -> Add to Home Screen.
+
+OFFLINE
+Visit the app once while online so the service worker can install and cache the app shell.
+After that, the tracker itself works offline. External resource sites such as Duolingo, Renshuu, YouTube and Tadoku still require internet when opened.
+
+DATA
+Study checkmarks, notes, katakana confidence and kanji count are stored locally in the browser/device. Clearing site data can remove them.
+
+UPDATES
+When a new V5 release changes the CACHE name in sw.js, old cached files are removed during activation and the new version is cached.
